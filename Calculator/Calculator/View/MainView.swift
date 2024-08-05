@@ -8,14 +8,7 @@
 import SwiftUI
 
 struct MainView: View {
-    
-    let buttonsArray: [[Buttons]] = [
-        [.clear, .negative, .percent, .divide],
-        [.seven, .eight, .nine, .multiple],
-        [.four, .five, .six, .minus],
-        [.one, .two, .three, .plus],
-        [.zero, .decimal, .equal]
-    ]
+    @EnvironmentObject var vm: ViewModel
     
     var body: some View {
         
@@ -30,7 +23,7 @@ struct MainView: View {
                 // MARK: Display
                 HStack {
                     Spacer()
-                    Text("0")
+                    Text(vm.value)
                         .foregroundStyle(.white)
                         .font(.system(size: 90))
                         .fontWeight(.light)
@@ -39,22 +32,23 @@ struct MainView: View {
                 }
                 
                 // MARK: Buttons
-                ForEach(buttonsArray, id: \.self) { row in
+                ForEach(vm.buttonsArray, id: \.self) { row in
                     HStack(spacing: 12) {
                         ForEach(row, id: \.self) { item in
                             Button {
-                                
+                                vm.didTap(item: item)
                             }label: {
                                 Text(item.rawValue)
-                                
                                     .font(.largeTitle)
-                                    .frame(width: self.buttonwidth(item: item), height: self.buttonHeidht())
+                                    .frame(
+                                        width: vm.buttonwidth(item: item),
+                                        height: vm.buttonHeidht())
                                     .foregroundStyle(item.buttonFonColor)
                                     .background(item.buttonColor)
                                     .clipShape(RoundedRectangle(cornerRadius: 25))
                                 
                             }
-                          
+                            
                         }
                     }
                 }
@@ -62,32 +56,9 @@ struct MainView: View {
             .padding(.bottom)
         }
     }
-    
-    // MARK: Size Buttons 
-    func buttonwidth(item: Buttons) -> CGFloat {
-        let spacing: CGFloat = 12
-        let totalSpacing: CGFloat = 5 * spacing
-        let zeroSpacing: CGFloat = 4 * spacing
-        let totalColums: CGFloat = 4
-        let scrinWidth = UIScreen.main.bounds.width
-        
-        if item == .zero {
-            return (scrinWidth - zeroSpacing) / totalColums * 2
-        }
-        return (scrinWidth - totalSpacing) / totalColums
-    }
-    
-    
-    func buttonHeidht() -> CGFloat {
-        let spacing: CGFloat = 12
-        let totalSpacing: CGFloat = 5 * spacing
-        let totalColums: CGFloat = 4
-        let scrinWidth = UIScreen.main.bounds.width
-        
-        return (scrinWidth - totalSpacing) / totalColums
-    }
 }
 
 #Preview {
     MainView()
+        .environmentObject(ViewModel())
 }
